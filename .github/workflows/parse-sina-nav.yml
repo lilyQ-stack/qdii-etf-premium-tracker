@@ -1,0 +1,26 @@
+name: Parse dated Sina S&P NAV
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - 'scripts/parse_sina_sp500_nav.py'
+      - '.github/workflows/parse-sina-nav.yml'
+permissions:
+  contents: read
+jobs:
+  parse:
+    runs-on: ubuntu-latest
+    timeout-minutes: 6
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: python scripts/parse_sina_sp500_nav.py
+      - name: Save diagnostic
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: sp500-dated-nav-candidates
+          path: output/sp500_sina_nav_candidates.json
+          retention-days: 14
