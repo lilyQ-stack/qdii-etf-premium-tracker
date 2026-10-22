@@ -107,3 +107,17 @@ The collector records the **NAV date**, original source URL and classification, 
 **Important:** these are reference NAV **candidates**, not real-time IOPV. They are independent of the four verified 14:00 *minute-labelled market price* observations; there is still no verified same-time fair value and therefore **no supported trading premium, historical premium percentile, or buy rating**. The "official manager page" classification means the data originated on the manager site, not that an independent human audit has occurred.
 
 Automatic historical candidate collection is separately scheduled from the market-price collector. Neither writes to the other's CSV file.
+
+## Phase 5 — cross-market data discovery and guarded pricing model (2026-10-22)
+
+The [Cross market timestamp probe](../../actions/workflows/crossmarket-probe.yml) tested minute data availability for S&P 500 futures (`ES=F`), Nasdaq-100 futures (`NQ=F`), and USD/CNY (`CNY=X`) via Yahoo Chart (query1/query2). **All three failed with HTTP 429 (rate-limited)** on the GitHub runner. The probe was executed and diagnostics were saved; **no market values were obtained**. The 429 must not be treated as a valid data series or silently replaced by old reference quotes.
+
+The [fair value guard tests](../../actions/workflows/test-fair-value-model.yml) exercise `scripts/fair_value_model.py`, a **pure, illustrative** implementation of:
+
+`modeled_nav = dated_nav * index_now/index_at_NAV_valuation_cutoff * USD_CNY_now/USD_CNY_at_NAV_valuation_cutoff`
+
+and `model_premium_percent = (market_price/modeled_nav - 1)*100`.
+
+The tests passed on GitHub Actions, but **no live premiums have been calculated**. The model rejects different index instrument types between anchor and present (e.g. spot index versus futures), FX inverted currency orientation, stale or future timestamps, absent provenance and implausible prices. An actual NAV valuation cutoff must be documented per fund before selecting market anchors. **ES and NQ futures proxies are not interchangeable with total-return index data** and cannot by themselves guarantee an accurate ETF fair value because QDII accounting, tracking, fees and cash also matter.
+
+Next priority: identify stable time-stamped FX and index data feeds which are accessible from GitHub, corroborate symbol units and actual NAV cutoff, then backtest modeled NAV versus subsequently published true NAV/IOPV. Price, NAV-candidate and source-diagnostic outputs remain separate, and no automated five-level investment rating has been enabled.
