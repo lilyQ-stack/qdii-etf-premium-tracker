@@ -1,6 +1,10 @@
 name: Official NAV field validation
 on:
   workflow_dispatch:
+  push:
+    paths:
+      - 'scripts/read_official_nav.py'
+      - '.github/workflows/official-nav-validation.yml'
 permissions:
   contents: read
 jobs:
