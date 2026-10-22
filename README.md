@@ -65,3 +65,13 @@ Public page URLs located as possible fund-company PCF/NAV source entry points (n
 The manual [Manager specific PCF source test](../../actions/workflows/manager-pcf-probe.yml) probes these links and the SSE PCF detail pages for 513650/513870. It saves only URL-access diagnostics and labeled HTML snippets as an Actions artifact. Many pages require JavaScript to populate detail, so absence of a fund code in static HTML is inconclusive.
 
 No official IOPV endpoint, synchronized NAV, verified premium, or historical premium sample has been established by this test. We will not promote fund NAV to '14:00 fair value' without FX/index timing adjustments and source validation.
+
+## Phase 3c — direct NAV labels from official manager websites
+
+[Official NAV field validation](../../actions/workflows/official-nav-validation.yml) now checks:
+- `513870`: Fullgoal fund-company **dated PCF previous-day NAV** and PCF announcement date.
+- `159696`: E Fund's [official product page](https://www.efunds.com.cn/fund/159696_org.shtml), **dated reported unit NAV**.
+
+The workflow is manual and **read-only**; it refuses missing labels, implausible values and future or >10-day-old NAV dates, and records explicitly that the values are **not** same-day 14:00 IOPV. Outputs are diagnostics for independent review, **not validated premiums**.
+
+Other official sources and index/FX adjustment models are not yet validated. Do not compare an older NAV directly with current trading prices and call the result a live premium.
