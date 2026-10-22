@@ -1,0 +1,48 @@
+name: Collect dated NAV candidates
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - 'scripts/collect_nav_candidates.py'
+      - '.github/workflows/collect-nav-candidates.yml'
+  schedule:
+    # China time 16:05 and 22:05 weekdays; GitHub cron is UTC.
+    - cron: '5 8,14 * * 1-5'
+
+permissions:
+  contents: write
+
+concurrency:
+  group: nav-candidate-history
+  cancel-in-progress: false
+
+jobs:
+  collect:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Gather and deduplicate NAV candidates
+        run: python scripts/collect_nav_candidates.py
+      - name: Archive provenance diagnostics
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: nav-candidate-collection-diagnostic
+          path: output/nav_collection.json
+          retention-days: 14
+      - name: Commit append-only NAV candidate records
+        run: |
+          if [[ -z "$(git status --porcelain -- data/nav_candidates.csv)" ]]; then
+            echo "No new dated NAV candidates"
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add data/nav_candidates.csv
+          git commit -m "Record dated NAV candidates with origin and review flags"
+          git pull --rebase origin main
+          git push origin HEAD:main
