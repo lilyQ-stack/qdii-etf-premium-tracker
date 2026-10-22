@@ -44,3 +44,9 @@ Security: this workflow requests `contents: write` solely to append the validate
 **No returned field is treated as verified IOPV.** The publicly accessible fund estimation endpoint may be unavailable or unsupported for cross-border ETFs, and an estimated fund value is not equivalent to the exchange-published IOPV. Neither the previous NAV nor a quote snapshot is sufficient to compute contemporaneous 14:00 ETF premiums.
 
 Next: locate the relevant fund/official IOPV provider, verify quote unit, timestamp, trading session and underlying FX/index handling; then develop separate synchronized premium calculations without altering the validated price CSV.
+
+## Phase 3b — official exchange / manager source exploration
+
+[Official IOPV and PCF page probe](../../actions/workflows/official-source-probe.yml) is a manual, read-only GitHub Actions test for the Shanghai Stock Exchange ETF pages, SSE/SZSE home pages and Southern Fund PCF page. It records page reachability and textual indicators **only**, with no inferred or unverified IOPV, no premium, and no changes to `data/verified_1400.csv`.
+
+SSE publishes ETF PCF information and whether IOPV disclosure is required; the PCF NAV date may be T-2 for cross-border ETFs. The SSE's IOPV source-upload interface is for approved institutions and is not an unrestricted retail data API. The next task is to identify a lawful, stable, timestamped **published** IOPV feed for each instrument, not to confuse uploading IOPV to the exchange with downloading the public reference price.
