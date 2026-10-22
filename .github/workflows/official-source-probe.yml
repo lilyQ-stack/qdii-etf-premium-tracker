@@ -1,0 +1,24 @@
+name: Official IOPV and PCF page probe
+on:
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  inspect:
+    runs-on: ubuntu-latest
+    timeout-minutes: 6
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Check official sources
+        run: python scripts/probe_official_sources.py
+      - name: Upload diagnostics
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: official-iopv-pcf-research
+          path: output/official_reference_probe.json
+          retention-days: 7
+          if-no-files-found: warn
