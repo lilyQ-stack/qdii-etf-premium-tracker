@@ -20,3 +20,19 @@
 使用的公开网页接口不保证稳定性，也不属于具有服务承诺的官方开发 API。公开仓库不保存任何密钥。
 
 本项目仅供技术研究与信息参考，不构成投资建议。
+
+
+## Phase 2 — automatic dated 14:00 minute observations
+
+Workflow: [ETF 14:00 minute capture](../../actions/workflows/capture-1400.yml).
+
+- Runs on weekdays at 14:03, 14:08 and 14:13 **Asia/Shanghai** (UTC cron 06:03, 06:08 and 06:13), and supports manual triggering.
+- Uses the **Shanghai exchange calendar** to skip known A-share holidays and weekends. If the calendar is unavailable, collection fails closed.
+- Reads the Tencent **14:00-labelled minute** row for each ETF; independently validates `date=YYYYMMDD`, 13:59 and 14:00 rows, plausible price and **increasing cumulative volume**.
+- Probes the Sina quote feed but does **not** interpret a later snapshot as the 14:00 price.
+- Writes only accepted **minute observations**, deduplicated by (trade_date, code, minute), to [data/verified_1400.csv](data/verified_1400.csv). The price is **not** an exchange tick at exactly 14:00:00.
+- Persists diagnostics as a temporary Actions artifact and logs; a successful workflow does not prove all four symbols were accepted.
+- Scheduled runs can be delayed or skipped by GitHub. If execution misses the 14:02–14:45 verification window, **no data are written**.
+- No IOPV, NAV, index futures, FX estimate, historical premium percentile, or buy grade is produced. Such fields must be separately sourced and validated before publication.
+
+Security: this workflow requests `contents: write` solely to append the validated CSV to its own repository. No API credentials or third-party integrations are stored.
