@@ -137,3 +137,19 @@ A separate [Capture cross-market quote candidates](../../actions/workflows/captu
 This supplementary dataset **must not be inserted into NAV or formal ETF premium calculations yet**. We still lack matched historical anchor timestamps corresponding to each NAV valuation cutoff, and independent checks of futures instrument specification/contract rolls. With only current snapshot futures or FX, a correct cross-market fair-value estimate remains unavailable.
 
 The previous Yahoo Finance endpoint returned HTTP 429 for all three desired series. We do not retry it in the scheduled candidate capture.
+
+## Phase 7 — Tencent same-snapshot ETF IOPV reference candidates (major breakthrough)
+
+**2026-10-22 15:47 CST actual GitHub-runner inspection** of `https://qt.gtimg.cn/q=sh513650,sh513870,sz159612,sz159696` found four ETF quote payloads with 88 fields each, including:
+- `[3]`: quoted secondary-market price; `[30]`: market-source snapshot timestamp (`YYYYMMDDHHMMSS`).
+- `[78]`: **candidate IOPV/reference value**, with values 513650=1.8779, 513870=1.9014, 159612=1.9342, 159696=1.8589.
+- `[77]`: **candidate vendor-reported reference premium percent**, values respectively 5.54, 10.23, 6.19, 12.97. Each matches `([3]/[78]-1)*100` to approximately 0.01 percentage point.
+- `[81]`: dated historic unit NAV candidate, respectively 1.8673, 1.8803, 1.9235, 1.8384, matching the four previously collected NAV values.
+
+This is strong **internal arithmetic consistency** and cross-corroboration of historic NAV fields, *not independent exchange certification of IOPV or verification that 15:47 values represent 14:00*. The source snapshot was timestamped ~15:47. Do not join it with previously stored 14:00 minute prices.
+
+The [Tencent ETF IOPV field verification](../../actions/workflows/tencent-iopv-probe.yml) diagnostic prints source timestamp, fields and identity for all four codes.
+
+A separate [Collect Tencent same snapshot reference premiums](../../actions/workflows/tencent-reference-capture.yml) is now scheduled for **14:03 / 14:08 / 14:13 CST on weekdays** (best-effort GitHub cron) and can be triggered manually. During an eligible actual 14:02–14:35 window, it retrieves *one simultaneous request*, validates each symbol, field[77] vs computed price/field[78] premium, source timestamp and freshness, and appends to [data/tencent_reference_premium_candidates.csv](data/tencent_reference_premium_candidates.csv) only when checks pass. This new file does **not yet exist or contain any verified scheduled samples**; the first real capture still needs observation. Its premiums are labeled **unofficial same-snapshot vendor-reference premium candidates**, NOT independently official exchange IOPV or exact 14:00-minute premiums.
+
+[Unit tests of field mapping and stale/mismatched timestamp guards](../../actions/workflows/test-tencent-reference.yml) have been added and passed their functional test step. These new results supersede the earlier assumption that a simple fund NAV / index / FX proxy model was the only route to an intraday reference value. We will prioritize validating the vendor IOPV feed, timestamping and collecting a daily history. **Do not activate investment buy grades or fabricate historical IOPV percentiles** until quality and sample size are adequate.
