@@ -1,0 +1,28 @@
+name: Cross market timestamp probe
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - 'scripts/probe_crossmarket.py'
+      - '.github/workflows/crossmarket-probe.yml'
+permissions:
+  contents: read
+jobs:
+  probe:
+    runs-on: ubuntu-latest
+    timeout-minutes: 7
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Probe USD/CNY and index futures
+        run: python scripts/probe_crossmarket.py
+      - name: Save results for review
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: crossmarket-time-diagnostic
+          path: output/crossmarket_diagnostic.json
+          if-no-files-found: warn
+          retention-days: 10
