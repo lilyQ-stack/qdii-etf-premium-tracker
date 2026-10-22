@@ -1,0 +1,27 @@
+name: Tencent ETF IOPV field verification
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - 'scripts/probe_tencent_iopv.py'
+      - '.github/workflows/tencent-iopv-probe.yml'
+permissions:
+  contents: read
+jobs:
+  investigate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Inspect ETF snapshot fields
+        run: python scripts/probe_tencent_iopv.py
+      - name: Save diagnostics
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: tencent-iopv-field-diagnostic
+          path: output/tencent_iopv_field_probe.json
+          retention-days: 14
