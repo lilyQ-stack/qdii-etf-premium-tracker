@@ -1,0 +1,24 @@
+name: ETF IOPV and NAV source probe
+on:
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  probe:
+    runs-on: ubuntu-latest
+    timeout-minutes: 6
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Test public NAV and quote reference sources
+        run: python scripts/probe_reference_values.py
+      - name: Upload raw diagnostic
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: reference-value-source-diagnostic
+          path: output/reference_probe.json
+          retention-days: 7
+          if-no-files-found: warn
