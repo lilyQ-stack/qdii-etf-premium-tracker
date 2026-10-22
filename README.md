@@ -36,3 +36,11 @@ Workflow: [ETF 14:00 minute capture](../../actions/workflows/capture-1400.yml).
 - No IOPV, NAV, index futures, FX estimate, historical premium percentile, or buy grade is produced. Such fields must be separately sourced and validated before publication.
 
 Security: this workflow requests `contents: write` solely to append the validated CSV to its own repository. No API credentials or third-party integrations are stored.
+
+## Phase 3 — IOPV / NAV source feasibility test
+
+[ETF IOPV and NAV source probe](../../actions/workflows/reference-value-probe.yml) is a **manual, read-only** diagnostic. It tests Tencent quotation fields and an unauthenticated Eastmoney fund estimate endpoint. The diagnostic result is a temporary artifact `reference-value-source-diagnostic`.
+
+**No returned field is treated as verified IOPV.** The publicly accessible fund estimation endpoint may be unavailable or unsupported for cross-border ETFs, and an estimated fund value is not equivalent to the exchange-published IOPV. Neither the previous NAV nor a quote snapshot is sufficient to compute contemporaneous 14:00 ETF premiums.
+
+Next: locate the relevant fund/official IOPV provider, verify quote unit, timestamp, trading session and underlying FX/index handling; then develop separate synchronized premium calculations without altering the validated price CSV.
