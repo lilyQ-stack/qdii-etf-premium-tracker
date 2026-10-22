@@ -121,3 +121,19 @@ and `model_premium_percent = (market_price/modeled_nav - 1)*100`.
 The tests passed on GitHub Actions, but **no live premiums have been calculated**. The model rejects different index instrument types between anchor and present (e.g. spot index versus futures), FX inverted currency orientation, stale or future timestamps, absent provenance and implausible prices. An actual NAV valuation cutoff must be documented per fund before selecting market anchors. **ES and NQ futures proxies are not interchangeable with total-return index data** and cannot by themselves guarantee an accurate ETF fair value because QDII accounting, tracking, fees and cash also matter.
 
 Next priority: identify stable time-stamped FX and index data feeds which are accessible from GitHub, corroborate symbol units and actual NAV cutoff, then backtest modeled NAV versus subsequently published true NAV/IOPV. Price, NAV-candidate and source-diagnostic outputs remain separate, and no automated five-level investment rating has been enabled.
+
+## Phase 6 — Sina FX and US index-futures snapshot candidates
+
+On **2026-10-22 15:42 CST**, [China feeds index FX symbol probe](../../actions/workflows/china-crossmarket-probe.yml) obtained non-empty raw responses on Sina for:
+- `USDCNY`: dated and clock-labeled US dollar / onshore RMB quote;
+- `fx_susdcny` and `fx_susdcnh`: onshore/offshore RMB reference fields;
+- `hf_ES`: labeled S&P 500 index future;
+- `hf_NQ`: labeled Nasdaq index future.
+
+The raw feeds returned dated clock labels; this demonstrates **reachability and schema candidates**, **not verified execution-grade futures price**, expiry, contract roll, official index reference, or 14:00 minute history. Sina `int_sp500` and `int_nasdaq` have no trustworthy quote timestamp in their short response; the latter is Nasdaq composite rather than guaranteed Nasdaq-100. Tencent lookup symbols in the research script are unverified alternatives.
+
+A separate [Capture cross-market quote candidates](../../actions/workflows/capture-crossmarket.yml) is configured for approximately **14:03, 14:08, 14:13 China time on A-share trading days**. It records dated/clock-labeled **spot snapshots, not 14:00 minute price bars**, with source and field provenance, and rejects stale snapshots, missing labels, or wrong dates. Accepted snapshots, if any, will be stored at [data/crossmarket_quote_candidates.csv](data/crossmarket_quote_candidates.csv); its creation and content are pending the first successful capture run. [Offline parser tests](../../actions/workflows/test-crossmarket-capture.yml) passed on GitHub Actions.
+
+This supplementary dataset **must not be inserted into NAV or formal ETF premium calculations yet**. We still lack matched historical anchor timestamps corresponding to each NAV valuation cutoff, and independent checks of futures instrument specification/contract rolls. With only current snapshot futures or FX, a correct cross-market fair-value estimate remains unavailable.
+
+The previous Yahoo Finance endpoint returned HTTP 429 for all three desired series. We do not retry it in the scheduled candidate capture.
