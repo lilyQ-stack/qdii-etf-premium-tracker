@@ -75,3 +75,16 @@ No official IOPV endpoint, synchronized NAV, verified premium, or historical pre
 The workflow is manual and **read-only**; it refuses missing labels, implausible values and future or >10-day-old NAV dates, and records explicitly that the values are **not** same-day 14:00 IOPV. Outputs are diagnostics for independent review, **not validated premiums**.
 
 Other official sources and index/FX adjustment models are not yet validated. Do not compare an older NAV directly with current trading prices and call the result a live premium.
+
+## Phase 3d — date-paired Sina SP500 NAV candidates (tested)
+
+[Parse dated Sina S&P NAV](../../actions/workflows/parse-sina-nav.yml) completed a real runner test on 2026-10-22 and found:
+
+| Code | Third-party unit NAV | NAV date | Validation |
+| --- | --- | --- | --- |
+| 513650 | 1.8673 CNY | 2026-10-20 | Correct fund code, near-top `单位净值` + `截止日期` fields, plausible |
+| 159612 | 1.9235 CNY | 2026-10-20 | Same checks |
+
+**Both remain third-party candidates, not official manager-verified NAVs.** Values are not contemporaneous with 2026-10-22 14:00 prices. No premium is computed, no record is written to `data/verified_1400.csv`, and the diagnostic artifact expires after 14 days.
+
+Next: corroborate the dated NAV against manager PCF or a separate independently attributable source; determine an auditable reference-value model using market-session timestamps, index exposure and FX. Do not calculate percentiles from mixed premium definitions.
