@@ -1,0 +1,21 @@
+name: Test Tencent reference premium guards
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - 'scripts/capture_tencent_reference.py'
+      - 'tests/test_tencent_reference.py'
+      - '.github/workflows/test-tencent-reference.yml'
+permissions:
+  contents: read
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 4
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Test same-snapshot reference premiums
+        run: python -m unittest discover -s tests -p 'test_tencent_reference.py' -v
