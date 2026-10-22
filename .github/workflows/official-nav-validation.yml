@@ -1,0 +1,24 @@
+name: Official NAV field validation
+on:
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 7
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Read dated official NAV fields
+        run: python scripts/read_official_nav.py
+      - name: Upload dated-NAV diagnostics
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: official-nav-diagnostic
+          path: output/official_nav_diagnostic.json
+          retention-days: 14
+          if-no-files-found: warn
