@@ -1,0 +1,40 @@
+name: Collect Tencent same snapshot reference premiums
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '3,8,13 6 * * 1-5'
+permissions:
+  contents: write
+concurrency:
+  group: tencent-reference-premium-candidate
+  cancel-in-progress: false
+jobs:
+  collect:
+    runs-on: ubuntu-latest
+    timeout-minutes: 6
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Capture source-synchronous ETF quote/reference
+        run: python scripts/capture_tencent_reference.py
+      - name: Upload diagnostic
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: tencent-reference-capture-diagnostic
+          path: output/tencent_reference_premium_capture.json
+          retention-days: 14
+      - name: Persist candidate snapshots only
+        run: |
+          if [[ -z "$(git status --porcelain -- data/tencent_reference_premium_candidates.csv)" ]]; then
+            echo "No new reference candidates"
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add data/tencent_reference_premium_candidates.csv
+          git commit -m "Store same-snapshot Tencent reference premium candidates"
+          git pull --rebase origin main
+          git push origin HEAD:main
