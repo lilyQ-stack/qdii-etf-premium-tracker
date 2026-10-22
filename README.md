@@ -50,3 +50,18 @@ Next: locate the relevant fund/official IOPV provider, verify quote unit, timest
 [Official IOPV and PCF page probe](../../actions/workflows/official-source-probe.yml) is a manual, read-only GitHub Actions test for the Shanghai Stock Exchange ETF pages, SSE/SZSE home pages and Southern Fund PCF page. It records page reachability and textual indicators **only**, with no inferred or unverified IOPV, no premium, and no changes to `data/verified_1400.csv`.
 
 SSE publishes ETF PCF information and whether IOPV disclosure is required; the PCF NAV date may be T-2 for cross-border ETFs. The SSE's IOPV source-upload interface is for approved institutions and is not an unrestricted retail data API. The next task is to identify a lawful, stable, timestamped **published** IOPV feed for each instrument, not to confuse uploading IOPV to the exchange with downloading the public reference price.
+
+## Official fund-specific source locations (research)
+
+Public page URLs located as possible fund-company PCF/NAV source entry points (not yet validated as parseable endpoints on GitHub runners):
+
+| ETF | Source | URL |
+| --- | --- | --- |
+| 513650 | Southern Fund PCF query | https://www.southernfund.com/new/transaction-guide/detailed-list.html |
+| 513870 | Fullgoal fund detail (includes '申赎清单' section) | https://www.fullgoal.com.cn/fundDetail/513870/index.html |
+| 159612 | Guotai ETF PCF listing | https://e.gtfund.com/Etrade/Jijin/etflist |
+| 159696 | E Fund official NAV/PCF | URL pending reliable identification |
+
+The manual [Manager specific PCF source test](../../actions/workflows/manager-pcf-probe.yml) probes these links and the SSE PCF detail pages for 513650/513870. It saves only URL-access diagnostics and labeled HTML snippets as an Actions artifact. Many pages require JavaScript to populate detail, so absence of a fund code in static HTML is inconclusive.
+
+No official IOPV endpoint, synchronized NAV, verified premium, or historical premium sample has been established by this test. We will not promote fund NAV to '14:00 fair value' without FX/index timing adjustments and source validation.
