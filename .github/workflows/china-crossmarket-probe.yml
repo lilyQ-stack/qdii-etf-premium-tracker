@@ -1,0 +1,28 @@
+name: China feeds index FX symbol probe
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - 'scripts/probe_china_crossmarket.py'
+      - '.github/workflows/china-crossmarket-probe.yml'
+permissions:
+  contents: read
+jobs:
+  probe:
+    runs-on: ubuntu-latest
+    timeout-minutes: 6
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Inspect Sina Tencent symbol payloads
+        run: python scripts/probe_china_crossmarket.py
+      - name: Upload diagnostics
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: china-crossmarket-symbol-diagnostics
+          path: output/china_crossmarket_quote_probe.json
+          retention-days: 10
+          if-no-files-found: warn
