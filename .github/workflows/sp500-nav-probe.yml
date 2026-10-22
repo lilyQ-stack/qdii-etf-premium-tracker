@@ -1,0 +1,28 @@
+name: S&P ETF official NAV discovery
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - 'scripts/probe_sp500_nav.py'
+      - '.github/workflows/sp500-nav-probe.yml'
+permissions:
+  contents: read
+jobs:
+  probe:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Inspect official and corroborating source pages
+        run: python scripts/probe_sp500_nav.py
+      - name: Archive diagnostics
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: sp500-nav-source-diagnostic
+          path: output/sp500_nav_probe.json
+          retention-days: 10
+          if-no-files-found: warn
