@@ -88,3 +88,22 @@ Other official sources and index/FX adjustment models are not yet validated. Do 
 **Both remain third-party candidates, not official manager-verified NAVs.** Values are not contemporaneous with 2026-10-22 14:00 prices. No premium is computed, no record is written to `data/verified_1400.csv`, and the diagnostic artifact expires after 14 days.
 
 Next: corroborate the dated NAV against manager PCF or a separate independently attributable source; determine an auditable reference-value model using market-session timestamps, index exposure and FX. Do not calculate percentiles from mixed premium definitions.
+
+## Phase 4 — persisted, source-labeled historical NAV candidates
+
+The [Collect dated NAV candidates](../../actions/workflows/collect-nav-candidates.yml) workflow is now configured for **16:05 and 22:05 China time on weekdays** (GitHub cron is best-effort; run timing is not guaranteed). It can also be triggered manually.
+
+The initial actual GitHub Actions run on **2026-10-22 15:29 CST** successfully appended four records to [data/nav_candidates.csv](data/nav_candidates.csv):
+
+| ETF | NAV date | NAV CNY | Source classification | Review status |
+| --- | --- | ---: | --- | --- |
+| 513870 | 2026-10-20 | 1.8803 | official fund manager webpage (Fullgoal) | manual field review required |
+| 159696 | 2026-10-20 | 1.8384 | official fund manager webpage (E Fund) | manual field review required |
+| 513650 | 2026-10-20 | 1.8673 | third-party Sina | not corroborated by fund manager |
+| 159612 | 2026-10-20 | 1.9235 | third-party Sina | not corroborated by fund manager |
+
+The collector records the **NAV date**, original source URL and classification, **first observed time**, PCF announcement date when available, and **candidate review status**. It deduplicates by date/fund/source and **fails closed on a changed same-date NAV** rather than silently overwriting history.
+
+**Important:** these are reference NAV **candidates**, not real-time IOPV. They are independent of the four verified 14:00 *minute-labelled market price* observations; there is still no verified same-time fair value and therefore **no supported trading premium, historical premium percentile, or buy rating**. The "official manager page" classification means the data originated on the manager site, not that an independent human audit has occurred.
+
+Automatic historical candidate collection is separately scheduled from the market-price collector. Neither writes to the other's CSV file.
