@@ -1,1 +1,5 @@
 trade_date,code,source,minute,minute_price_cny,observed_at_cst,minute_precision,cumulative_volume,cumulative_amount,sina_snapshot_status
+20261022,513650,tencent_minute,1400,1.981,2026-10-22T14:27:19.559222+08:00,minute_label_not_exchange_tick,1903250,379507739.74,reachable
+20261022,513870,tencent_minute,1400,2.096,2026-10-22T14:27:19.559222+08:00,minute_label_not_exchange_tick,338380,71315614.08,reachable
+20261022,159612,tencent_minute,1400,2.054,2026-10-22T14:27:19.559222+08:00,minute_label_not_exchange_tick,163519,33737913.90,reachable
+20261022,159696,tencent_minute,1400,2.101,2026-10-22T14:27:19.559222+08:00,minute_label_not_exchange_tick,424087,89390201.90,reachable
