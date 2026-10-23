@@ -110,10 +110,17 @@ def main():
         if not trading_day(now):
             diag["status"] = "market_closed"
             return
-        # Cron is best-effort. Never write at other hours or on following day.
-        if not (now.hour == 14 and 2 <= now.minute <= 45):
-            diag["status"] = "outside_capture_window"
+        # Minute API includes an explicit YYYYMMDD for its 14:00 bar.
+        # Safely recover delayed GitHub runs *on the SAME trade date* when
+        # Tencent still serves that dated minute bar. Never use tomorrow's
+        # records to backfill the previous trading day.
+        if not ((now.hour == 14 and now.minute >= 2) or
+                (15 <= now.hour <= 23)):
+            diag["status"] = "outside_same_day_window"
             return
+        diag["capture_mode"] = ("intraday" if now.hour == 14
+                                else "late_same_day_minute_recovery")
+        diag["source_minute_label"] = "1400"
         diag["sina"] = sina_snapshot()
         rows = []
         for code, symbol in FUNDS.items():
@@ -136,7 +143,8 @@ def main():
             except Exception as exc:
                 diag["instruments"][code] = {"status": "rejected", "error": str(exc)}
         diag["added"] = write_rows(rows)
-        diag["status"] = "finished"
+        diag["status"] = ("finished_with_valid_1400_minute_rows"
+                          if rows else "no_valid_1400_minute_rows")
     finally:
         DIAG_PATH.parent.mkdir(parents=True, exist_ok=True)
         DIAG_PATH.write_text(json.dumps(diag, ensure_ascii=False, indent=2) + "\n",
