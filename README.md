@@ -153,3 +153,32 @@ The [Tencent ETF IOPV field verification](../../actions/workflows/tencent-iopv-p
 A separate [Collect Tencent same snapshot reference premiums](../../actions/workflows/tencent-reference-capture.yml) is now scheduled for **14:03 / 14:08 / 14:13 CST on weekdays** (best-effort GitHub cron) and can be triggered manually. During an eligible actual 14:02–14:35 window, it retrieves *one simultaneous request*, validates each symbol, field[77] vs computed price/field[78] premium, source timestamp and freshness, and appends to [data/tencent_reference_premium_candidates.csv](data/tencent_reference_premium_candidates.csv) only when checks pass. This new file does **not yet exist or contain any verified scheduled samples**; the first real capture still needs observation. Its premiums are labeled **unofficial same-snapshot vendor-reference premium candidates**, NOT independently official exchange IOPV or exact 14:00-minute premiums.
 
 [Unit tests of field mapping and stale/mismatched timestamp guards](../../actions/workflows/test-tencent-reference.yml) have been added and passed their functional test step. These new results supersede the earlier assumption that a simple fund NAV / index / FX proxy model was the only route to an intraday reference value. We will prioritize validating the vendor IOPV feed, timestamping and collecting a daily history. **Do not activate investment buy grades or fabricate historical IOPV percentiles** until quality and sample size are adequate.
+
+## 2026-10-23 scheduling incident and remediation
+
+**Incident:** All three GitHub scheduled intraday captures fired at ~19:11–19:29 China time instead of ~14:03–14:13. Their validation properly refused to invent 14:00 snapshots. GitHub job status `success` is not the same as valid price-data collection.
+
+**Immediate salvage implemented/tested on 2026-10-23:** `scripts/capture_1400.py` now allows **same-calendar-day late readback** of Tencent's dated `14:00` minute-bar query after 15:00 CST, while still requiring: Shanghai exchange open date, Tencent source date = today's CST date, actual `13:59` + `14:00` bars, valid price and positive 14:00 incremental volume. It retains `observed_at_cst` at the late retrieval time and `minute_precision=minute_label_not_exchange_tick`. This is *NOT* recovery of an intraday IOPV snapshot or a historical tick.
+
+A real push-triggered recovery run [39970832690](../../actions/runs/39970832690) at **22:35 CST** recovered and committed the following legitimate Tencent 14:00-labelled bar observations from **2026-10-23**:
+- 513650: 1.952 CNY;
+- 513870: 2.060 CNY;
+- 159696: 2.077 CNY.
+- 159612: **rejected** because 14:00 cumulative volume did not increase over 13:59; no synthetic/no-trade price written.
+
+See [data/verified_1400.csv](data/verified_1400.csv). The three CSV records are explicitly late-**observed** 14:00-minute bar prices, not 22:35 prices, nor a guaranteed exact 14:00:00 transaction. Other 14:00 snapshot reference/premium and FX futures data remain absent for 2026-10-23.
+
+### Optional external cron dispatcher: NOT DEPLOYED
+
+Files prepared: [Cloudflare Worker](infra/cloudflare-worker/worker.js), [wrangler.toml](infra/cloudflare-worker/wrangler.toml). They request GitHub `workflow_dispatch` for three capture workflows at Beijing **14:04, 14:09, 14:14** on weekdays. Cloudflare account setup and secret configuration are **user actions**; no token has been created, supplied, stored or deployed in this repository. GitHub native cron remains as fallback.
+
+To activate, the repo owner needs a Cloudflare Workers account, a fine-grained GitHub PAT restricted to **only this repository** with **Actions: read/write** permission, and then run (on their own trusted workstation):
+```sh
+cd infra/cloudflare-worker
+npx wrangler login
+npx wrangler deploy
+npx wrangler secret put GITHUB_TOKEN
+```
+Do **not** paste the token into ChatGPT or commit it into any repository. Cloudflare external cron reduces dependence on GitHub's own scheduler but GitHub workflow dispatch can still queue late. Its effectiveness is **not validated until a real next-trading-day execution**. Weekend/holiday runs are rejected by the Python trading-day check (except the experimental Tencent IOPV candidate capture currently only performs a weekday/time check; it validates same-day timestamp).
+
+**Further design work:** consider running the actual collection directly on an external compute scheduler or a machine near China instead of dispatching into delayed GitHub-hosted runner queues. Require observed capture vs scheduled timestamps and alert if no valid data. Do not relax same-snapshot IOPV timing requirements to 'salvage' a late job.
