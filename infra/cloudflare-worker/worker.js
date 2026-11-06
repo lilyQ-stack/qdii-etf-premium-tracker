@@ -21,7 +21,7 @@ function parseQuote(text,now){
    if(!m)throw Error("missing quote");
    const f=m[1].split("~");
    if(f.length<83||f[2]!==code||!f[1])throw Error("wrong fund identity");
-   const st=sourceDate(f[30]),sp=parts(st),lag=(now-st)/1000;
+   const st=sourceDate(f[30]),sp=parts(st),lag=(now.getTime()-st.getTime())/1000;
    if(sp.ymd!==p.ymd||sp.hour!=="14"||+sp.minute>35||lag< -15||lag>180)throw Error("stale or wrong session");
    const price=num(f[3],"price"),ref=num(f[78],"reference"),premium=num(f[77],"premium");
    const nav=f[81] ? num(f[81],"historic_nav"):null;
