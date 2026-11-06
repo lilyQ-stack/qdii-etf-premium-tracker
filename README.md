@@ -182,3 +182,45 @@ npx wrangler secret put GITHUB_TOKEN
 Do **not** paste the token into ChatGPT or commit it into any repository. Cloudflare external cron reduces dependence on GitHub's own scheduler but GitHub workflow dispatch can still queue late. Its effectiveness is **not validated until a real next-trading-day execution**. Weekend/holiday runs are rejected by the Python trading-day check (except the experimental Tencent IOPV candidate capture currently only performs a weekday/time check; it validates same-day timestamp).
 
 **Further design work:** consider running the actual collection directly on an external compute scheduler or a machine near China instead of dispatching into delayed GitHub-hosted runner queues. Require observed capture vs scheduled timestamps and alert if no valid data. Do not relax same-snapshot IOPV timing requirements to 'salvage' a late job.
+
+
+## Phase 8 — Direct Cloudflare intraday capture (prepared 2026-11-06; NOT DEPLOYED)
+
+The previous Cloudflare Worker was only a GitHub `workflow_dispatch` sender and could
+still miss 14:00 because GitHub Actions queues jobs. Its code has now been replaced by
+a **direct-fetch-and-archive** collector.
+
+Files: [Worker](infra/cloudflare-worker/worker.js) and [wrangler.toml](infra/cloudflare-worker/wrangler.toml).
+
+- Scheduled at Beijing time 14:04, 14:09, 14:14 on weekdays.
+- Cloudflare fetches a single Tencent public quote response directly, validates all
+  four symbol identities, quote timestamps (not >180 seconds stale), maximum 90-second
+  inter-symbol time skew, plausible values, and price/reference-premium arithmetic.
+- Rejects entire batch if even one target symbol fails. The stored quantity is a
+  **vendor-reported reference premium candidate**, **not certified exchange IOPV**.
+- Accepted observations are committed to isolated immutable-looking timestamped files
+  `data/cloudflare_reference_candidates/YYYY-MM-DD/YYYYMMDD-HHMMSS.json`.
+  (GitHub Contents API creates files; if a path already exists the write is rejected.)
+- Failed captures appear in Cloudflare Worker logs, not GitHub Actions green/red status.
+- This does **not** merge observations with the 14:00 minute-price CSV, calculate
+  historical official IOPV percentiles, or activate a trading rating.
+- Cloudflare/third-party quote access, token permissions, actual scheduling behavior,
+  and GitHub write permissions **must be tested on a genuine trading day**. A successful
+  GitHub commit of code does not mean the Worker is deployed.
+
+### Deployment actions required from the repository owner
+
+1. Create/sign in to a Cloudflare account and authorize Workers. Never give ChatGPT a token.
+2. From a trusted local workstation, open `infra/cloudflare-worker`. Run
+   `npx wrangler login` then `npx wrangler deploy` (uses `wrangler.toml`).
+3. Create a **fine-grained GitHub personal access token** limited to
+   `lilyQ-stack/qdii-etf-premium-tracker`, with repository **Contents: Read and write**.
+   Configure it only as an encrypted Worker secret: `npx wrangler secret put GITHUB_TOKEN`.
+   Do not commit it, show it in screenshots, or paste it into a chat.
+4. In the Cloudflare dashboard, inspect Worker cron schedules and execution logs for
+   the first following A-share session. Confirm actual repository JSON commits and
+   per-fund timestamps. Rotate/revoke secrets if accidentally disclosed.
+
+The existing QDII scheduled GitHub Actions can remain as separate price and NAV
+candidate collectors. Their old delayed reference-snapshot collector is not a
+fallback source of reliable 14:00 values.
