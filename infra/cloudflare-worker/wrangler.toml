@@ -1,10 +1,11 @@
-name = "qdii-etf-cron-dispatcher"
+name = "qdii-etf-direct-capture"
 main = "worker.js"
-compatibility_date = "2026-10-23"
+compatibility_date = "2026-11-06"
+
 [triggers]
+# UTC 06:04, 06:09, 06:14 = Beijing 14:04, 14:09, 14:14 (Mon-Fri)
 crons = ["4,9,14 6 * * MON-FRI"]
 
-# Store the fine-grained GitHub token in Worker secrets using:
-# npx wrangler secret put GITHUB_TOKEN
-# Token: ONLY lilyQ-stack/qdii-etf-premium-tracker, Actions read and write.
-# Never commit access tokens.
+# Store GITHUB_TOKEN as a Cloudflare Worker secret, never commit it.
+# Fine-grained PAT: only lilyQ-stack/qdii-etf-premium-tracker
+# Repository Contents: Read and write. Actions permission NOT required.
