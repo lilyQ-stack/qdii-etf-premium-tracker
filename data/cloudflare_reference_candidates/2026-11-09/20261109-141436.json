@@ -1,0 +1,58 @@
+{
+  "schema_version": 1,
+  "source": "Tencent Finance",
+  "captured_at_cst": "2026-11-09T14:14:36+08:00",
+  "scheduled_at_utc": "2026-11-09T06:14:35.795Z",
+  "source_field_indexes": {
+    "price": 3,
+    "timestamp": 30,
+    "premium": 77,
+    "reference": 78,
+    "historic_nav": 81
+  },
+  "official_iopv_verified": false,
+  "exact_1400_minute_bar": false,
+  "warning": "UNOFFICIAL vendor reference premium candidate; NOT exchange IOPV or trading signal",
+  "instruments": {
+    "159612": {
+      "code": "159612",
+      "source_timestamp_cst": "2026-11-09T14:14:36+08:00",
+      "snapshot_price_cny": "2.009",
+      "reference_value_cny": "1.8381",
+      "feed_premium_pct": "9.30",
+      "recalculated_premium_pct": 9.2976,
+      "historical_nav_candidate_cny": "1.8320",
+      "data_quality": "Tencent_same_snapshot_coherent_unofficial_reference"
+    },
+    "159696": {
+      "code": "159696",
+      "source_timestamp_cst": "2026-11-09T14:14:36+08:00",
+      "snapshot_price_cny": "1.981",
+      "reference_value_cny": "1.6815",
+      "feed_premium_pct": "17.81",
+      "recalculated_premium_pct": 17.8115,
+      "historical_nav_candidate_cny": "1.6589",
+      "data_quality": "Tencent_same_snapshot_coherent_unofficial_reference"
+    },
+    "513650": {
+      "code": "513650",
+      "source_timestamp_cst": "2026-11-09T14:14:33+08:00",
+      "snapshot_price_cny": "1.945",
+      "reference_value_cny": "1.7849",
+      "feed_premium_pct": "8.97",
+      "recalculated_premium_pct": 8.9697,
+      "historical_nav_candidate_cny": "1.7788",
+      "data_quality": "Tencent_same_snapshot_coherent_unofficial_reference"
+    },
+    "513870": {
+      "code": "513870",
+      "source_timestamp_cst": "2026-11-09T14:14:30+08:00",
+      "snapshot_price_cny": "1.989",
+      "reference_value_cny": "1.7199",
+      "feed_premium_pct": "15.65",
+      "recalculated_premium_pct": 15.6463,
+      "historical_nav_candidate_cny": "1.6965",
+      "data_quality": "Tencent_same_snapshot_coherent_unofficial_reference"
+    }
+  }
+}
