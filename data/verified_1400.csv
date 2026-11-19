@@ -77,3 +77,6 @@ trade_date,code,source,minute,minute_price_cny,observed_at_cst,minute_precision,
 20261118,513870,tencent_minute,1400,2.016,2026-11-18T23:30:30.532663+08:00,minute_label_not_exchange_tick,307279,61775568.00,reachable
 20261118,159612,tencent_minute,1400,2.011,2026-11-18T23:30:30.532663+08:00,minute_label_not_exchange_tick,74539,14964044.36,reachable
 20261118,159696,tencent_minute,1400,2.017,2026-11-18T23:30:30.532663+08:00,minute_label_not_exchange_tick,148572,29886286.53,reachable
+20261119,513650,tencent_minute,1400,1.924,2026-11-19T23:38:20.201561+08:00,minute_label_not_exchange_tick,1560074,301055705.21,reachable
+20261119,513870,tencent_minute,1400,2.010,2026-11-19T23:38:20.201561+08:00,minute_label_not_exchange_tick,253184,50902529.00,reachable
+20261119,159612,tencent_minute,1400,2.002,2026-11-19T23:38:20.201561+08:00,minute_label_not_exchange_tick,234037,47043896.13,reachable
