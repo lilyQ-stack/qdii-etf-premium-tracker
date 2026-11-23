@@ -1,0 +1,58 @@
+{
+  "schema_version": 1,
+  "source": "Tencent Finance",
+  "captured_at_cst": "2026-11-23T14:14:37+08:00",
+  "scheduled_at_utc": "2026-11-23T06:14:35.795Z",
+  "source_field_indexes": {
+    "price": 3,
+    "timestamp": 30,
+    "premium": 77,
+    "reference": 78,
+    "historic_nav": 81
+  },
+  "official_iopv_verified": false,
+  "exact_1400_minute_bar": false,
+  "warning": "UNOFFICIAL vendor reference premium candidate; NOT exchange IOPV or trading signal",
+  "instruments": {
+    "159612": {
+      "code": "159612",
+      "source_timestamp_cst": "2026-11-23T14:14:33+08:00",
+      "snapshot_price_cny": "1.917",
+      "reference_value_cny": "1.7229",
+      "feed_premium_pct": "11.27",
+      "recalculated_premium_pct": 11.2659,
+      "historical_nav_candidate_cny": "1.7872",
+      "data_quality": "Tencent_same_snapshot_coherent_unofficial_reference"
+    },
+    "159696": {
+      "code": "159696",
+      "source_timestamp_cst": "2026-11-23T14:14:33+08:00",
+      "snapshot_price_cny": "1.917",
+      "reference_value_cny": "1.5590",
+      "feed_premium_pct": "22.96",
+      "recalculated_premium_pct": 22.9634,
+      "historical_nav_candidate_cny": "1.6513",
+      "data_quality": "Tencent_same_snapshot_coherent_unofficial_reference"
+    },
+    "513650": {
+      "code": "513650",
+      "source_timestamp_cst": "2026-11-23T14:14:35+08:00",
+      "snapshot_price_cny": "1.831",
+      "reference_value_cny": "1.6715",
+      "feed_premium_pct": "9.54",
+      "recalculated_premium_pct": 9.5423,
+      "historical_nav_candidate_cny": "1.7356",
+      "data_quality": "Tencent_same_snapshot_coherent_unofficial_reference"
+    },
+    "513870": {
+      "code": "513870",
+      "source_timestamp_cst": "2026-11-23T14:14:34+08:00",
+      "snapshot_price_cny": "1.912",
+      "reference_value_cny": "1.5934",
+      "feed_premium_pct": "19.99",
+      "recalculated_premium_pct": 19.995,
+      "historical_nav_candidate_cny": "1.6886",
+      "data_quality": "Tencent_same_snapshot_coherent_unofficial_reference"
+    }
+  }
+}
