@@ -83,3 +83,6 @@ code,nav_date,nav_cny,source_class,source,source_url,record_type,pcf_announcemen
 159696,2026-11-24,1.6320,fund_manager_page,efunds,https://www.efunds.com.cn/fund/159696_org.shtml,reported_unit_nav,,2026-11-26T02:30:24.408999+08:00,candidate_manual_review_required,false
 513650,2026-11-24,1.7413,third_party_page,Sina Finance,https://stock.finance.sina.com.cn/fundInfo/view/FundInfo_LSJZ.php?symbol=513650,reported_unit_nav,,2026-11-26T02:30:24.408999+08:00,candidate_not_manager_corroborated,false
 159612,2026-11-24,1.7927,third_party_page,Sina Finance,https://stock.finance.sina.com.cn/fundInfo/view/FundInfo_LSJZ.php?symbol=159612,reported_unit_nav,,2026-11-26T02:30:24.408999+08:00,candidate_not_manager_corroborated,false
+159696,2026-11-25,1.6211,fund_manager_page,efunds,https://www.efunds.com.cn/fund/159696_org.shtml,reported_unit_nav,,2026-11-27T02:13:24.129697+08:00,candidate_manual_review_required,false
+513650,2026-11-25,1.7363,third_party_page,Sina Finance,https://stock.finance.sina.com.cn/fundInfo/view/FundInfo_LSJZ.php?symbol=513650,reported_unit_nav,,2026-11-27T02:13:24.129697+08:00,candidate_not_manager_corroborated,false
+159612,2026-11-25,1.7874,third_party_page,Sina Finance,https://stock.finance.sina.com.cn/fundInfo/view/FundInfo_LSJZ.php?symbol=159612,reported_unit_nav,,2026-11-27T02:13:24.129697+08:00,candidate_not_manager_corroborated,false
